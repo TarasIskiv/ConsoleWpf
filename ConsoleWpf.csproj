@@ -55,6 +55,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Infrastructure\BaseCommand\Command.cs" />
+    <Compile Include="Infrastructure\LambdaCommand.cs" />
     <Compile Include="Windows\MainConsoleWindow.xaml.cs">
       <DependentUpon>MainConsoleWindow.xaml</DependentUpon>
     </Compile>
