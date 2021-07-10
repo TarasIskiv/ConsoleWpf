@@ -4,36 +4,47 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 
 namespace ConsoleWpf.ViewModels
 {
     internal class MainConsolePageViewModel : Base_ViewModel.ViewModel
     {
-        internal MainConsolePageViewModel()
-        {
-
-        }
-
+        
+        #region Entry
         private string entry = "console line > ";
 
         public string Entry
         {
-            get
-            {
-                if (entry.EndsWith("\n"))
-                {
-                    return entry + f();
-                }else
-                {
-                    return entry;
-                }
-            }
+            get => entry;
             set => Set(ref entry, value);
         }
+        #endregion
 
-        public string f() 
+        #region Button
+
+        public ICommand ResultButton { get; }
+
+        public bool CanResultExecute(object parameter) => true;
+        public void ResultExecute(object parameter)
         {
-                return "Hello\nconsole line > ";
-        } 
+
+        }
+
+        #endregion
+
+
+        #region Result
+        private string result;
+        public string Result 
+        { 
+            get => result;
+            set => Set(ref result, value);
+        }
+        #endregion
+        internal MainConsolePageViewModel()
+        {
+            ResultButton = new Infastructure.LambdaCommand(ResultExecute, CanResultExecute);
+        }
     }
 }

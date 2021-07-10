@@ -45,12 +45,13 @@
                 Background="Black"
                 Foreground="White"
                 BorderBrush="White"
-                BorderThickness="1"/>
+                BorderThickness="1"
+                Command="{Binding Path=ResultButton}"/>
         <Border Grid.Row="2"
                 Margin="10"
                 BorderBrush="White"
                 BorderThickness="1">
-            <TextBlock />
+            <TextBlock Text="{Binding Path=Result, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
         </Border>
     </Grid>
 </Page>
