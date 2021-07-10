@@ -10,19 +10,19 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ConsoleWpf
+namespace ConsoleWpf.Windows
 {
     /// <summary>
-    /// Логика взаимодействия для MainWindow.xaml
+    /// Логика взаимодействия для MainConsoleWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainConsoleWindow : Window
     {
-        public MainWindow()
+        public MainConsoleWindow()
         {
             InitializeComponent();
+            MainFrame.Content = new Pages.MainConsolePage();
         }
     }
 }
