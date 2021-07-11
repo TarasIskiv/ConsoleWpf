@@ -28,7 +28,8 @@ namespace ConsoleWpf.ViewModels
         public bool CanResultExecute(object parameter) => true;
         public void ResultExecute(object parameter)
         {
-
+            string searched = Entry;
+            selector(searched);
         }
 
         public ICommand ResetButton { get; }
@@ -36,11 +37,55 @@ namespace ConsoleWpf.ViewModels
         public bool CanResetExecute(object parameter) => true;
         public void ResetExecute(object parameter)
         {
-
+            Entry = null;
+            Entry = "console line > ";
         }
 
         #endregion
 
+
+        #region Functions
+
+        private void selector(string line)
+        {
+            line = line.Substring(14).Trim();
+            MessageBox.Show(line);
+            if (line.Equals("help"))
+            {
+                //work
+            }else
+            {
+                if (line.StartsWith("-f"))
+                {
+                    //work
+                }else if (line.StartsWith("-d"))
+                {
+                    // work
+                }else if (line.StartsWith("-u"))
+                {
+                    // work
+                }else
+                {
+                    //bad input
+                }
+            }
+        }
+
+        private string fileSelected(string line)
+        {
+            return null;
+        }
+
+        private string directorySelected(string line)
+        {
+            return null;
+        }
+
+        private string urlSelected(string line)
+        {
+            return null;
+        }
+        #endregion
 
         #region Result
         private string result;
