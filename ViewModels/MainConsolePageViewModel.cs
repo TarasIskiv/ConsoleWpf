@@ -21,6 +21,18 @@ namespace ConsoleWpf.ViewModels
         }
         #endregion
 
+        #region Output
+
+        private string outputValue;
+        public string OutputValue
+        { 
+            get => outputValue;
+            set => Set(ref outputValue, value);
+        }
+
+
+        #endregion
+
         #region Buttons
 
         public ICommand ResultButton { get; }
@@ -38,6 +50,7 @@ namespace ConsoleWpf.ViewModels
         public void ResetExecute(object parameter)
         {
             Entry = null;
+            OutputValue = null;
             Entry = "console line > ";
         }
 
@@ -52,19 +65,27 @@ namespace ConsoleWpf.ViewModels
             MessageBox.Show(line);
             if (line.Equals("help"))
             {
-                //work
-            }else
+                OutputValue = helpSelected();
+            }
+            else if (line.Equals("exit")) 
+            {
+                exitSelected();
+            }
+            else
             {
                 if (line.StartsWith("-f"))
                 {
                     //work
-                }else if (line.StartsWith("-d"))
+                }
+                else if (line.StartsWith("-d"))
                 {
                     // work
-                }else if (line.StartsWith("-u"))
+                }
+                else if (line.StartsWith("-u"))
                 {
                     // work
-                }else
+                }
+                else
                 {
                     //bad input
                 }
@@ -84,6 +105,22 @@ namespace ConsoleWpf.ViewModels
         private string urlSelected(string line)
         {
             return null;
+        }
+
+        private string helpSelected()
+        {
+            string resultLine = "Commands : \nhelp - show possible commands\n" +
+                " -f <filepath> <word> or <\"sentence\">\n" +
+                " -d <directorypath> <word> or <\"sentence\">\n" +
+                " -u <url> <word> or <\"sentence\">\n" +
+                " exit - close application\n" +
+                " Do not use brackets \"<,>\"";
+            return resultLine;
+        }
+
+        private void exitSelected()
+        {
+            Application.Current.Shutdown();
         }
         #endregion
 

@@ -72,7 +72,10 @@
                 Margin="10"
                 BorderBrush="White"
                 BorderThickness="1">
-            <TextBlock Text="{Binding Path=Result, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+            <TextBox Text="{Binding Path=OutputValue, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                     Background="Black"
+                     Foreground="White"
+                     IsReadOnly="True"/>
         </Border>
     </Grid>
 </Page>
