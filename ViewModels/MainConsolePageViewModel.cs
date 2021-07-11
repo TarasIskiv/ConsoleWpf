@@ -21,12 +21,20 @@ namespace ConsoleWpf.ViewModels
         }
         #endregion
 
-        #region Button
+        #region Buttons
 
         public ICommand ResultButton { get; }
 
         public bool CanResultExecute(object parameter) => true;
         public void ResultExecute(object parameter)
+        {
+
+        }
+
+        public ICommand ResetButton { get; }
+
+        public bool CanResetExecute(object parameter) => true;
+        public void ResetExecute(object parameter)
         {
 
         }
@@ -45,6 +53,7 @@ namespace ConsoleWpf.ViewModels
         internal MainConsolePageViewModel()
         {
             ResultButton = new Infastructure.LambdaCommand(ResultExecute, CanResultExecute);
+            ResetButton = new Infastructure.LambdaCommand(ResetExecute, CanResetExecute);
         }
     }
 }
