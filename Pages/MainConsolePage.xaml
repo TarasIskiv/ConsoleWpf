@@ -34,7 +34,7 @@
                      Height="Auto"
                      Width="Auto"
                      Text="{Binding Path=Entry, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                     FontSize="15"
+                     FontSize="20"
                      FontFamily="Ariel"
                      FontStretch="ExtraExpanded"/>
         </Border>
@@ -75,7 +75,8 @@
             <TextBox Text="{Binding Path=OutputValue, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                      Background="Black"
                      Foreground="White"
-                     IsReadOnly="True"/>
+                     IsReadOnly="True"
+                     FontSize="20"/>
         </Border>
     </Grid>
 </Page>

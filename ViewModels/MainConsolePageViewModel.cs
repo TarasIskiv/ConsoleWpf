@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -75,7 +76,7 @@ namespace ConsoleWpf.ViewModels
             {
                 if (line.StartsWith("-f"))
                 {
-                    //work
+                    OutputValue = fileSelected(line);
                 }
                 else if (line.StartsWith("-d"))
                 {
@@ -91,12 +92,95 @@ namespace ConsoleWpf.ViewModels
                 }
             }
         }
-
+        #region File Selected
         private string fileSelected(string line)
         {
-            return null;
+            string result = string.Empty;
+            line = line.Substring(3).Trim();
+            var elements = line.Split(new string[] { " - " }, StringSplitOptions.None).ToList();
+            if (!elements.ToString().EndsWith(@"\"))
+            {
+                string FILENAME = getFileName(line, elements);
+                string path = Path.GetFullPath(System.Reflection.Assembly.GetExecutingAssembly().Location);
+                string filepath;
+                do
+                {
+                    path = Path.GetDirectoryName(path);
+                    filepath = String.Format("{0}{1}{2}", path, Path.DirectorySeparatorChar, FILENAME);
+                    if (filepath.StartsWith(@"\\"))
+                    {
+                        return "File not found";
+                    }
+                } while (!File.Exists(filepath));
+                Console.WriteLine(filepath);
+
+                using (var reader = new StreamReader(filepath))
+                {
+                    var content = new List<string>();
+                    while (!reader.EndOfStream)
+                    {
+                        content.Add(reader.ReadLine());
+                    }
+
+                    Models.FileData.filePath = filepath;
+                    Models.FileData.data = content;
+                    result = searcher(elements[1]);
+                }
+            }else
+            {
+                result = "Bad Input";
+            }
+            return result;
         }
 
+
+        private string getFileName(string line, List<string> elements)
+        {
+            
+
+            string FileName = @elements[0];
+            var temp_list = FileName.Split((char)92);
+
+            string FILENAME = temp_list[temp_list.Length - 2] + ((char)92) + temp_list[temp_list.Length - 1];
+            MessageBox.Show(FILENAME);
+            return FILENAME;
+        } 
+
+
+        private string searcher(string searchedValue)
+        {
+            MessageBox.Show(searchedValue);
+            if(searchedValue.StartsWith(((char)34).ToString()) && searchedValue.EndsWith(((char)34).ToString()))
+            {
+                searchedValue = searchedValue.Substring(1);
+                searchedValue = searchedValue.Substring(0, searchedValue.Length - 1);
+                MessageBox.Show(searchedValue);
+            }
+            var content = Models.FileData.data.ToList();
+            int lineNumber = 1;
+            var listResults = new List<string>();
+            listResults.Add("Searched data : " + searchedValue);
+            foreach(var line in content)
+            {
+                if (line.Contains(searchedValue))
+                {
+                    listResults.Add("Line Number : " + lineNumber.ToString() + "\nLine: " + line.ToString() + "\n");
+                }
+                lineNumber++;
+            }
+            string res = "Bad Input Data";
+            if (listResults.Count == 1)
+            {
+                res = "No matches found";
+            }
+            else
+            {
+                res = string.Join("\n", listResults.ToArray());
+            }
+            return res;
+        }
+
+        #endregion
         private string directorySelected(string line)
         {
             return null;
@@ -110,9 +194,9 @@ namespace ConsoleWpf.ViewModels
         private string helpSelected()
         {
             string resultLine = "Commands : \nhelp - show possible commands\n" +
-                " -f <filepath> <word> or <\"sentence\">\n" +
-                " -d <directorypath> <word> or <\"sentence\">\n" +
-                " -u <url> <word> or <\"sentence\">\n" +
+                " -f <filepath> - <word> or <\"sentence\">\n" +
+                " -d <directorypath> - <word> or <\"sentence\">\n" +
+                " -u <url> - <word> or <\"sentence\">\n" +
                 " exit - close application\n" +
                 " Do not use brackets \"<,>\"";
             return resultLine;
