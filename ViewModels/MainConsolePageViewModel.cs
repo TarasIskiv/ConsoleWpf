@@ -81,7 +81,7 @@ namespace ConsoleWpf.ViewModels
                 }
                 else if (line.StartsWith("-d"))
                 {
-                    // work
+                    OutputValue = directorySelected(line);
                 }
                 else if (line.StartsWith("-u"))
                 {
@@ -89,7 +89,7 @@ namespace ConsoleWpf.ViewModels
                 }
                 else
                 {
-                    //bad input
+                    OutputValue = "Bad input";
                 }
             }
         }
@@ -182,11 +182,83 @@ namespace ConsoleWpf.ViewModels
         }
 
         #endregion
+
+        #region Folder Selected
         private string directorySelected(string line)
         {
-            return null;
+            string result = string.Empty;
+            line = line.Substring(3).Trim();
+            var elements = line.Split(new string[] { " - " }, StringSplitOptions.None).ToList();
+            if (!getFiles(elements[0]))
+            {
+                return "Bad Input";
+            }
+
+            return getContent(elements[1]);
         }
 
+        private string getContent(string searchedValue)
+        {
+            var temp_list = new List<string>();
+            foreach(var item in Models.FolderData.allFiles)
+            {
+                if(item.ToString().EndsWith("txt") || item.ToString().EndsWith("docx"))
+                {
+                    temp_list.Add(item);
+                }
+            }
+
+            if(temp_list.Count == 0)
+            {
+                return "Folder don't exist .txt or .docx files";
+            }
+            for(int i = 0; i < temp_list.Count; ++i)
+            {
+                var temp_list_Lines = new List<string>();
+                using (StreamReader stream = new StreamReader(@temp_list[i]))
+                {
+                    while (!stream.EndOfStream)
+                        temp_list_Lines.Add(stream.ReadLine());
+                }
+                int lineNumber = 1;
+                foreach(var line in temp_list_Lines)
+                {
+                    if (line.Contains(searchedValue))
+                    {
+                        string toSet = "File : " + temp_list[i];
+                        if (!Models.FolderData.results.Contains(toSet)) {
+                            Models.FolderData.results.Add("File : " + temp_list[i]);
+                        }
+                        Models.FolderData.results.Add("Line number : " + lineNumber.ToString() + "\nLine : \n" + line);
+
+                    }
+                    lineNumber++;
+                }
+            }
+
+            if(Models.FolderData.results.Count == 0)
+            {
+                return "No matches found";
+            }
+
+
+            return string.Join("\n", Models.FolderData.results.ToArray());
+        }
+        private bool getFiles(string path)
+        {
+            try
+            {
+                var list = Directory.GetFiles(path);
+                Models.FolderData.allFiles = list.ToList();
+            }catch(Exception ex)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        #endregion
         #region URI Selected
         private string uriSelected(string line)
         {
