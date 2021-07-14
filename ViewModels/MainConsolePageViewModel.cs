@@ -25,7 +25,7 @@ namespace ConsoleWpf.ViewModels
 
         #region Output
 
-        private string outputValue;
+        private string outputValue = "Enter help to show all possible commands";
         public string OutputValue
         { 
             get => outputValue;
@@ -63,8 +63,13 @@ namespace ConsoleWpf.ViewModels
 
         private void selector(string line)
         {
+            if(!line.StartsWith("console line > "))
+            {
+                Entry = "console line > ";
+                OutputValue = "Bad Input";
+                return;
+            }
             line = line.Substring(14).Trim();
-            MessageBox.Show(line);
             if (line.Equals("help"))
             {
                 OutputValue = helpSelected();
@@ -96,40 +101,48 @@ namespace ConsoleWpf.ViewModels
         #region File Selected
         private string fileSelected(string line)
         {
-            string result = string.Empty;
-            line = line.Substring(3).Trim();
-            var elements = line.Split(new string[] { " - " }, StringSplitOptions.None).ToList();
-            if (!elements.ToString().EndsWith(@"\"))
+            try
             {
-                string FILENAME = getFileName(line, elements);
-                string path = Path.GetFullPath(System.Reflection.Assembly.GetExecutingAssembly().Location);
-                string filepath;
-                do
-                {
-                    path = Path.GetDirectoryName(path);
-                    filepath = String.Format("{0}{1}{2}", path, Path.DirectorySeparatorChar, FILENAME);
-                    if (filepath.StartsWith(@"\\"))
-                    {
-                        return "File not found";
-                    }
-                } while (!File.Exists(filepath));
-                Console.WriteLine(filepath);
+                string result = string.Empty;
+                line = line.Substring(3).Trim();
+                var elements = line.Split(new string[] { " - " }, StringSplitOptions.None).ToList();
 
-                using (var reader = new StreamReader(filepath))
+                if (!elements.ToString().EndsWith(@"\"))
                 {
-                    var content = new List<string>();
-                    while (!reader.EndOfStream)
+                    string FILENAME = getFileName(line, elements);
+                    string path = Path.GetFullPath(System.Reflection.Assembly.GetExecutingAssembly().Location);
+                    string filepath;
+                    do
                     {
-                        content.Add(reader.ReadLine());
-                    }
+                        path = Path.GetDirectoryName(path);
+                        filepath = String.Format("{0}{1}{2}", path, Path.DirectorySeparatorChar, FILENAME);
+                        if (filepath.StartsWith(@"\\"))
+                        {
+                            return "File not found";
+                        }
+                    } while (!File.Exists(filepath));
+                    Console.WriteLine(filepath);
 
-                    Models.FileData.filePath = filepath;
-                    Models.FileData.data = content;
-                    result = searcher(elements[1]);
+                    using (var reader = new StreamReader(filepath))
+                    {
+                        var content = new List<string>();
+                        while (!reader.EndOfStream)
+                        {
+                            content.Add(reader.ReadLine());
+                        }
+
+                        Models.FileData.filePath = filepath;
+                        Models.FileData.data = content;
+                        result = searcher(elements[1]);
+                    }
                 }
-            }else
+                else
+                {
+                    result = "Bad Input";
+                }
+            }catch (Exception ex)
             {
-                result = "Bad Input";
+                return "Bad Input";
             }
             return result;
         }
@@ -143,19 +156,16 @@ namespace ConsoleWpf.ViewModels
             var temp_list = FileName.Split((char)92);
 
             string FILENAME = temp_list[temp_list.Length - 2] + ((char)92) + temp_list[temp_list.Length - 1];
-            MessageBox.Show(FILENAME);
             return FILENAME;
         } 
 
 
         private string searcher(string searchedValue)
         {
-            MessageBox.Show(searchedValue);
             if(searchedValue.StartsWith(((char)34).ToString()) && searchedValue.EndsWith(((char)34).ToString()))
             {
                 searchedValue = searchedValue.Substring(1);
                 searchedValue = searchedValue.Substring(0, searchedValue.Length - 1);
-                MessageBox.Show(searchedValue);
             }
             var content = Models.FileData.data.ToList();
             int lineNumber = 1;
@@ -186,15 +196,22 @@ namespace ConsoleWpf.ViewModels
         #region Folder Selected
         private string directorySelected(string line)
         {
-            string result = string.Empty;
-            line = line.Substring(3).Trim();
-            var elements = line.Split(new string[] { " - " }, StringSplitOptions.None).ToList();
-            if (!getFiles(elements[0]))
+            try
+            {
+                string result = string.Empty;
+                line = line.Substring(3).Trim();
+                var elements = line.Split(new string[] { " - " }, StringSplitOptions.None).ToList();
+                if (!getFiles(elements[0]))
+                {
+                    return "Bad Input";
+                }
+                return getContent(elements[1]);
+            }
+            catch (Exception ex)
             {
                 return "Bad Input";
             }
 
-            return getContent(elements[1]);
         }
 
         private string getContent(string searchedValue)
@@ -202,7 +219,7 @@ namespace ConsoleWpf.ViewModels
             var temp_list = new List<string>();
             foreach(var item in Models.FolderData.allFiles)
             {
-                if(item.ToString().EndsWith("txt") || item.ToString().EndsWith("docx"))
+                if(item.ToString().EndsWith(".txt") || item.ToString().EndsWith(".docx"))
                 {
                     temp_list.Add(item);
                 }
@@ -264,8 +281,6 @@ namespace ConsoleWpf.ViewModels
         {
             line = line.Substring(3).Trim();
             var elements = line.Split(new string[] { " - " }, StringSplitOptions.None).ToList();
-            MessageBox.Show(elements[0]);
-            MessageBox.Show(elements[1]);
             if(writeContent(elements[0]).ToString().Equals("Bad URI"))
             {
                 return "Bad URI";
@@ -280,7 +295,7 @@ namespace ConsoleWpf.ViewModels
             var html = new List<string>();
             try
             {
-                WebRequest request = WebRequest.Create("https://stackoverflow.com/questions/36756935/how-do-i-add-a-scrollbar-to-a-textbox-in-wpf-c-sharp/36756982");
+                WebRequest request = WebRequest.Create(uri);
                 WebResponse response = request.GetResponse();
                 Stream data = response.GetResponseStream();
                 using (StreamReader sr = new StreamReader(data))
